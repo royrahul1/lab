@@ -1,44 +1,74 @@
-/* A Naive recursive implementation
-of 0-1 Knapsack problem */
 #include <stdio.h>
 
-// A utility function that returns
-// maximum of two integers
-int max(int a, int b) { return (a > b) ? a : b; }
+struct Activity {
+  char id[5];
+  int start;
+  int finish;
+};
 
-// Returns the maximum value that can be
-// put in a knapsack of capacity W
-int knapSack(int W, int wt[], int val[], int n)
-{
-	// Base Case
-	if (n == 0 || W == 0)
-		return 0;
+void activitySelection(Activity activities[], int n);
 
-	// If weight of the nth item is more than
-	// Knapsack capacity W, then this item cannot
-	// be included in the optimal solution
-	if (wt[n - 1] > W)
-		return knapSack(W, wt, val, n - 1);
+int main(void) {
 
-	// Return the maximum of two cases:
-	// (1) nth item included
-	// (2) not included
-	else
-		return max(
-			val[n - 1]
-				+ knapSack(W - wt[n - 1],
-						wt, val, n - 1),
-			knapSack(W, wt, val, n - 1));
+  //activities
+  Activity activities[8] = {
+    {"a1", 1, 3},
+    {"a2", 0, 4},
+    {"a3", 1, 2},
+    {"a4", 4, 6},
+    {"a5", 2, 9},
+    {"a6", 5, 8},
+    {"a7", 3, 5},
+    {"a8", 4, 5}
+  };
+
+  //number of activities
+  int n = 8;
+
+  activitySelection(activities, n);
+
+  return 0;
 }
 
-// Driver program to test above function
-int main()
-{
-	int val[] = { 60, 100, 120 };
-	int wt[] = { 10, 20, 30 };
-	int W = 10;
-	int n = sizeof(val) / sizeof(val[0]);
-	printf("%d", knapSack(W, wt, val, n));
-	return 0;
-}
+void activitySelection(Activity activities[], int n) {
+  //variables
+  int i, j;
 
+  Activity temp;
+
+  //step 1
+  //sort the activities as per finishing time in ascending order
+  for(i = 1; i < n; i++) {
+    for(j = 0; j < n - 1; j++){
+      if(activities[j].finish > activities[j+1].finish) {
+        temp = activities[j];
+        activities[j] = activities[j+1];
+        activities[j+1] = temp;
+      }
+    }
+  }
+
+  //sorted
+  printf("Sorted activities as per finish time (ascending order)\n");
+  printf("%10s %10s %10s\n", "Activity", "Start", "Finish");
+  for(i = 0; i < n; i++) {
+    printf("%10s %10i %10i\n", activities[i].id, activities[i].start, activities[i].finish);
+  }
+
+  //step 2
+  //select the first activity
+  printf("-----Selected Activities-----\n");
+  printf("%10s %10s %10s\n", "Activity", "Start", "Finish");
+  printf("%10s %10i %10i\n", activities[0].id, activities[0].start, activities[0].finish);
+
+  //step 3
+  //select next activity whose start time is greater than
+  //or equal to the finish time of the previously selected activity
+  i = 0;
+  for(j = 1; j < n; j++) {
+    if(activities[j].start >= activities[i].finish) {
+      printf("%10s %10i %10i\n", activities[j].id, activities[j].start, activities[j].finish);
+      i = j;
+    }
+  }
+}
