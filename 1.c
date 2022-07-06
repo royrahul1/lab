@@ -1,119 +1,54 @@
-#include<stdio.h>
-int size =0;
-void swap(int *a,int *b)
-{
-	int temp;
-	temp=*a;
-	*a=*b;
-	*b=temp;
-}
-void sort(int arr[],int n)
-{
-	for(int i=0;i<n-1;i++)
-	{
-		for(int j=i+1;j<n;j++)
-		{
-			if(arr[j]<arr[i])
-			{
-				swap(&arr[j],&arr[i]);
-			}
-		}
-	}
+#include <stdio.h>
+
+int max(int a,int b){
+	return a>b ? a : b;
 }
 
-void printarray(int arr[],int n)
-{
-	for(int i=0;i<n;i++)
-	{
-		printf("%d\t",arr[i]);
-	}
-	printf("\n");
+int knapsack_dp(int w[],int p[],int n,int m){
+    int dp[n+1][m+1];
+
+    for(int i=0;i<=n;i++)
+        dp[i][0]=0;
+
+    for(int i=0;i<=m;i++)
+        dp[0][i]=0;
+
+    for(int i=1;i<=n;i++)
+        for(int j=1;j<=m;j++){
+            if(j >= w[i-1])
+              dp[i][j] = max(p[i-1]+dp[i-1][j-w[i-1]],dp[i-1][j]);
+        else 
+            dp[i][j] = dp[i-1][j];
+        }
+    
+    printf("\n");
+    for(int i=0;i<=n;i++){
+        for(int j=0;j<=m;j++)
+            printf("%d ",dp[i][j]);
+        printf("\n");    
+    }
+    return dp[n][m];
 }
-void minheapify(int arr[],int i)
-{
-	int min = i;
-	int l = 2*i+1;
-	int r= 2*i+2;
-	
-	if(l<size && arr[l]<arr[min])
-	{
-		min =l;
-	}
-	if(r<size && arr[r]<arr[min])
-	{
-		min =r;
-	}
-	if(min!=i)
-	{
-		swap(&arr[i],&arr[min]);
-		minheapify(arr,min);
-	}
-}
-void buildheap(int arr[])
-{
-	for(int i=(size/2)-1;i>=0;i--)
-	{
-		minheapify(arr,i);
-	}
-}
-int extract(int arr[])
-{
-	int x = arr[0];
-	swap(&arr[0],&arr[size-1]);
-	size = size-1;
-	for(int i=(size/2)-1;i>=0;i--)
-		{
-			minheapify(arr,i);
-		}
-	
-	return x;
-}
-void insert(int arr[],int element)
-{
-	if(size==0)
-	{
-		arr[0]=element;
-		size++;
-	}
-	else
-	{
-		arr[size]=element;
-		size++;
-		for(int i=(size/2)-1;i>=0;i--)
-		{
-			minheapify(arr,i);
-		}
-	}
-}
-void hufmann(int arr[])
-{
-	while(size>1)
-	{
-		int x= extract(arr);
-		int y= extract(arr);
-		insert(arr,x+y);
-		sort(arr,size);
-		printarray(arr,size);
-		
-	}
-}
-int main()
-{
-	int m,ele;
-	printf("enter the number of frequencies\n");
-	scanf("%d",&m);
-	int arr[m];
-	printf("enter the frequencies\n");
-	for(int i=0;i<m;i++)
-	
-	{
-	    scanf("%d",&ele);
-	    insert(arr,ele);
-	}
-	sort(arr,size);
-	printarray(arr,m);
-	printf("\n");
-	
-	
-	hufmann(arr);
+
+int main() {
+    int n,max,m;
+    printf("Enter the no of objects: ");
+    scanf("%d",&n);
+    int w[n],p[n];
+  
+    printf("Enter the profit of objects: \n");
+    for(int i=0;i<n;i++)
+        scanf("%d",&p[i]);
+
+    printf("Enter the weight of objects: \n");
+    for(int i=0;i<n;i++)
+        scanf("%d",&w[i]);
+    
+    printf("Enter the knapsack capacity: ");
+    scanf("%d",&m);
+    
+    max=knapsack_dp(w,p,n,m);
+    printf("\nThe Maximum profit: %d\n",max);
+    
+    return 0;
 }
