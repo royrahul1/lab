@@ -1,181 +1,130 @@
-// Huffman Coding in C
-
 #include <stdio.h>
-#include <stdlib.h>
 
-#define MAX_TREE_HT 50
+int Q[20], front=-1, rear=-1;
 
-struct MinHNode {
-  char item;
-  unsigned freq;
-  struct MinHNode *left, *right;
+struct node
+{
+  int col,dist, par;
 };
 
-struct MinHeap {
-  unsigned size;
-  unsigned capacity;
-  struct MinHNode **array;
-};
-
-// Create nodes
-struct MinHNode *newNode(char item, unsigned freq) {
-  struct MinHNode *temp = (struct MinHNode *)malloc(sizeof(struct MinHNode));
-
-  temp->left = temp->right = NULL;
-  temp->item = item;
-  temp->freq = freq;
-
-  return temp;
+int Queue_empty(int Q[])
+{
+  if(front==-1)
+    return 1;
+  else
+    return 0;
 }
 
-// Create min heap
-struct MinHeap *createMinH(unsigned capacity) {
-  struct MinHeap *minHeap = (struct MinHeap *)malloc(sizeof(struct MinHeap));
-
-  minHeap->size = 0;
-
-  minHeap->capacity = capacity;
-
-  minHeap->array = (struct MinHNode **)malloc(minHeap->capacity * sizeof(struct MinHNode *));
-  return minHeap;
-}
-
-// Function to swap
-void swapMinHNode(struct MinHNode **a, struct MinHNode **b) {
-  struct MinHNode *t = *a;
-  *a = *b;
-  *b = t;
-}
-
-// Heapify
-void minHeapify(struct MinHeap *minHeap, int idx) {
-  int smallest = idx;
-  int left = 2 * idx + 1;
-  int right = 2 * idx + 2;
-
-  if (left < minHeap->size && minHeap->array[left]->freq < minHeap->array[smallest]->freq)
-    smallest = left;
-
-  if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq)
-    smallest = right;
-
-  if (smallest != idx) {
-    swapMinHNode(&minHeap->array[smallest], &minHeap->array[idx]);
-    minHeapify(minHeap, smallest);
+void EnQueue(int Q[], int k)
+{
+  if(front==-1)
+  {
+    front++;
+    rear++;
+    Q[rear]=k;
+  }
+  else
+  {
+    if((rear+1)%20==front)
+      printf("Queue is full\n");
+    else
+    {
+      rear=(rear+1)%20;
+      Q[rear]=k;
+    }
   }
 }
 
-// Check if size if 1
-int checkSizeOne(struct MinHeap *minHeap) {
-  return (minHeap->size == 1);
-}
-
-// Extract min
-struct MinHNode *extractMin(struct MinHeap *minHeap) {
-  struct MinHNode *temp = minHeap->array[0];
-  minHeap->array[0] = minHeap->array[minHeap->size - 1];
-
-  --minHeap->size;
-  minHeapify(minHeap, 0);
-
-  return temp;
-}
-
-// Insertion function
-void insertMinHeap(struct MinHeap *minHeap, struct MinHNode *minHeapNode) {
-  ++minHeap->size;
-  int i = minHeap->size - 1;
-
-  while (i && minHeapNode->freq < minHeap->array[(i - 1) / 2]->freq) {
-    minHeap->array[i] = minHeap->array[(i - 1) / 2];
-    i = (i - 1) / 2;
+int DeQueue(int Q[])
+{
+  if(front==-1)
+  {
+    printf("Queue is empty\n");
+    return -1;
   }
-  minHeap->array[i] = minHeapNode;
-}
-
-void buildMinHeap(struct MinHeap *minHeap) {
-  int n = minHeap->size - 1;
-  int i;
-
-  for (i = (n - 1) / 2; i >= 0; --i)
-    minHeapify(minHeap, i);
-}
-
-int isLeaf(struct MinHNode *root) {
-  return !(root->left) && !(root->right);
-}
-
-struct MinHeap *createAndBuildMinHeap(char item[], int freq[], int size) {
-  struct MinHeap *minHeap = createMinH(size);
-
-  for (int i = 0; i < size; ++i)
-    minHeap->array[i] = newNode(item[i], freq[i]);
-
-  minHeap->size = size;
-  buildMinHeap(minHeap);
-
-  return minHeap;
-}
-
-struct MinHNode *buildHuffmanTree(char item[], int freq[], int size) {
-  struct MinHNode *left, *right, *top;
-  struct MinHeap *minHeap = createAndBuildMinHeap(item, freq, size);
-
-  while (!checkSizeOne(minHeap)) {
-    left = extractMin(minHeap);
-    right = extractMin(minHeap);
-
-    top = newNode('$', left->freq + right->freq);
-
-    top->left = left;
-    top->right = right;
-
-    insertMinHeap(minHeap, top);
-  }
-  return extractMin(minHeap);
-}
-
-void printHCodes(struct MinHNode *root, int arr[], int top) {
-  if (root->left) {
-    arr[top] = 0;
-    printHCodes(root->left, arr, top + 1);
-  }
-  if (root->right) {
-    arr[top] = 1;
-    printHCodes(root->right, arr, top + 1);
-  }
-  if (isLeaf(root)) {
-    printf("  %c   | ", root->item);
-    printArray(arr, top);
+  else
+  {
+    if(front==rear)
+    {
+      int temp=Q[front];
+      front=-1;
+      rear=-1;
+      return temp;
+    }
+    else
+    {
+      int temp=Q[front];
+      front=(front+1)%20;
+      return temp;
+    }
   }
 }
 
-// Wrapper function
-void HuffmanCodes(char item[], int freq[], int size) {
-  struct MinHNode *root = buildHuffmanTree(item, freq, size);
-
-  int arr[MAX_TREE_HT], top = 0;
-
-  printHCodes(root, arr, top);
+void bfs(int g[][10], struct node*v, int start)
+{
+  int i,j,k;
+  for(i=0;i<10;i++)
+  {
+    if(i!=start)
+    {
+      v[i].col=0;
+      v[i].dist=32765;
+      v[i].par=-1;
+    }
+  }
+  v[start].col=1;
+  v[start].dist=0;
+  v[start].par=-1;
+  EnQueue(Q,start);
+  while(!Queue_empty(Q))
+  {
+    int u=DeQueue(Q);
+    for(i=0;i<10;i++)
+    {
+      if(i!=u)
+      {
+        if(g[u][i]==1 && v[i].col==0)
+        {
+          v[i].col=1;
+          v[i].dist=v[u].dist+1;
+          v[i].par=u;
+          EnQueue(Q,i);
+        }
+      }
+    }
+    v[u].col=2;
+  }
 }
 
-// Print the array
-void printArray(int arr[], int n) {
-  int i;
-  for (i = 0; i < n; ++i)
-    printf("%d", arr[i]);
-
-  printf("\n");
+void PrintPath(int g[][10], struct node *v, int s, int u)
+{
+  if(s==u)
+    printf("%d  ",s);
+  else if(v[u].par==-1)
+    printf("No path from %d to %d\n", s, u);
+  else
+  {
+    PrintPath(g, v, s, v[u].par);
+    printf("%d  ",u);
+  }
 }
 
-int main() {
-  char arr[] = {'A', 'B', 'C', 'D'};
-  int freq[] = {5, 1, 6, 3};
-
-  int size = sizeof(arr) / sizeof(arr[0]);
-
-  printf(" Char | Huffman code ");
-  printf("\n--------------------\n");
-
-  HuffmanCodes(arr, freq, size);
+int main()
+{
+  int i, j, g[10][10]={0};
+  int srcnode;
+  printf("What is start node : ");
+  scanf("%d",&srcnode);
+  struct node v[10]={0};
+  for(i=0; i<10;i++)
+    for(j=0;j<10;j++)
+      scanf("%d", &g[i][j]);
+  bfs(g, v, srcnode);
+  printf("PATHFROM SOURCE:%d to all other nodes\n",srcnode);
+  for(i=0;i<10;i++)
+  {
+    PrintPath(g, v, srcnode, i);
+    printf("\n");
+  }
+  return 0;
 }
