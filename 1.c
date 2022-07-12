@@ -1,54 +1,44 @@
 #include <stdio.h>
-
-int max(int a,int b){
-	return a>b ? a : b;
+#include <stdlib.h>
+int sourceV,Vertex,Edge,time,visited[10],Graph[10][10];
+void DepthFirstSearch(int i)
+{
+int j;
+visited[i]=1;
+printf(" %d->",i++);
+for(j=0;j<Vertex;j++)
+{
+if(Graph[i][j]==1&&visited[j]==0)
+DepthFirstSearch(j);
 }
-
-int knapsack_dp(int w[],int p[],int n,int m){
-    int dp[n+1][m+1];
-
-    for(int i=0;i<=n;i++)
-        dp[i][0]=0;
-
-    for(int i=0;i<=m;i++)
-        dp[0][i]=0;
-
-    for(int i=1;i<=n;i++)
-        for(int j=1;j<=m;j++){
-            if(j >= w[i-1])
-              dp[i][j] = max(p[i-1]+dp[i-1][j-w[i-1]],dp[i-1][j]);
-        else 
-            dp[i][j] = dp[i-1][j];
-        }
-    
-    printf("\n");
-    for(int i=0;i<=n;i++){
-        for(int j=0;j<=m;j++)
-            printf("%d ",dp[i][j]);
-        printf("\n");    
-    }
-    return dp[n][m];
 }
-
-int main() {
-    int n,max,m;
-    printf("Enter the no of objects: ");
-    scanf("%d",&n);
-    int w[n],p[n];
-  
-    printf("Enter the profit of objects: \n");
-    for(int i=0;i<n;i++)
-        scanf("%d",&p[i]);
-
-    printf("Enter the weight of objects: \n");
-    for(int i=0;i<n;i++)
-        scanf("%d",&w[i]);
-    
-    printf("Enter the knapsack capacity: ");
-    scanf("%d",&m);
-    
-    max=knapsack_dp(w,p,n,m);
-    printf("\nThe Maximum profit: %d\n",max);
-    
-    return 0;
+int main()
+{
+int i,j,vertex1,vertex2;
+printf("\t\t\tGraphs\n");
+printf("Enter no. of edges:");
+scanf("%d",&Edge);
+printf("Enter no. of vertices:");
+scanf("%d",&Vertex);
+for(i=0;i<Vertex;i++)
+{
+for(j=0;j<Vertex;j++)
+Graph[i][j]=0;
+}
+for(i=0;i<Edge;i++)
+{
+printf("Enter the edges in V1 V2 : ");
+scanf("%d%d",&vertex1,&vertex2);
+Graph[vertex1-1][vertex2-1]=1;
+}
+for(i=0;i<Vertex;i++)
+{
+for(j=0;j<Vertex;j++)
+printf(" %d ",Graph[i][j]);
+printf("\n");
+}
+printf("Enter source Vertex: ");
+scanf("%d",&sourceV);
+DepthFirstSearch(sourceV-1);
+return 0;
 }
