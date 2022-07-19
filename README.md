@@ -1,100 +1,133 @@
 =======================//BFS//===================================================================================
 ```
-#include<stdio.h>
-int q[20],f=-1,r=-1;
-typedef struct{
-    int col;
-    int d;
-    int pi;
+ #include <stdio.h>
+
+int Q[30];
+int f=-1,r=-1;
+
+typedef struct node {
+  int col;
+  int dist;
+  int par;
+
 }node;
-int isEmpty()
-{
-    if(f==-1&&r==-1)
-        return 1;
-    else
-        return 0;
+
+int isEmpty(int Q[]){
+  if(f==-1)
+    return 1;
+
+  else
+    return 0;
 }
-void Enqueue(int k)
-{
-    if(f==-1&&r==-1)
-    {
-        f=r=0;
-        q[f]=k;
-    }
+
+void enQueue(int Q[], int k){
+  if(f==-1){
+    f++;
+    r++;
+    Q[r]=k;
+  }
+
+  else{
+
+    if((r+1)%30==f)
+      printf("Queue is Full\n");
+
     else{
-        r=(r+1)%10;
-        q[r]=k;
+      r=(r+1)%30;
+      Q[r]=k;
     }
+
+  }
+
 }
-int Dequeue(){
-    int ret;
-    if(f==r){
-        ret=q[f];
-        f=r=-1;
-    }
-    else{
-        ret=q[f];
-        f=(f+1)%10;
-    }
-    return ret;
+
+
+int deQueue(int Q[]){
+  if(f==-1){
+    printf("Queue is Empty\n");
+    return -1;
+  } else {
+      if(f==r){
+        int temp = Q[f];
+        f=-1;
+        r=-1;
+        return temp;
+      } else {
+        int temp = Q[f];
+        f = (f+1)%30;
+        return temp;
+      }
+
+  }
+
 }
-void bfs(int g[][30],int n,node *v,int start)
+
+void PrintPath(int g[][10], node *n, int s, int u)
 {
-    for(int i=0;i<n;i++)
-    {
-        if(i!=start)
-        {
-            v[i].col=0;
-            v[i].d=35555;
-            v[i].pi=-1;
-        }
-    }
-    v[start].col=1;
-    v[start].d=0;
-    v[start].pi=-1;
-    Enqueue(start);
-    while(!isEmpty())
-    {
-        int u=Dequeue();
-        for(int i=0;i<n;i++)
-        {
-            if(i!=u)
-            {
-                if(g[u][i]==1&&v[i].col==0)
-                {
-                    v[i].col=1;
-                    v[i].d=v[u].d+1;
-                    v[i].pi=u;
-                    Enqueue(i);
-                }
-            }
-        }
-        v[u].col=2;
-    }
+  if(s==u)
+    printf("%d ",s);
+  else if(n[u].par==-1)
+    printf("No Path from %d to %d",s,u);
+  else
+  {
+    PrintPath(g,n,s,n[u].par);
+    printf("%d ",u);
+  }
 }
-int main()
-{
-    int n,startnode;
-    printf("Enter the number of vertices:\n");
-    scanf("%d",&n);
-    int g[30][30]={0};
-    node v[n];
-    printf("Enter the start node:\n");
-    scanf("%d",&startnode);
-    printf("Enter the adjacency matrix:\n");
-    for(int i=0;i<n;i++)
-    {
-        for(int j=0;j<n;j++)
-        {
-            scanf("%d",&g[i][j]);
+
+void bfs(int g[][10], struct node *v, int s){
+  int i,j,k;
+  for(i=0;i<10;i++){
+    if(i!=s){
+      v[i].col=0;
+      v[i].dist=55555;
+      v[i].par=-1;
+    }
+
+  }
+
+  v[s].col=1;
+  v[s].dist=0;
+  v[s].par=-1;
+  enQueue(Q, s);
+
+  while(!isEmpty(Q)){
+
+    int u = deQueue(Q);
+    for(i=0;i<10;i++){
+
+      if(i!=u){
+
+        if(g[u][i]==1 && v[i].col==0){
+
+          v[i].col=1;
+          v[i].dist=v[u].dist+1;
+          v[i].par=u;
+          enQueue(Q, i);
         }
+      }
     }
-    bfs(g,n,v,startnode);
-    printf("\nNode\t\tDistance from source: %d\t\t Parent\n",startnode);
-    for(int i=0;i<n;i++)
-    {
-        printf("Node:\n%d\t\t\t%d\t\t%d\t\t\t\t\n",i,v[i].d,v[i].pi);
-    }
+    v[u].col=2;
+  }
+}
+
+int main(void) {
+  int i,j,g[10][10]={0};
+  int src;
+  printf("Source node: ");
+  scanf("%d", &src);
+  node v[10]={0};
+  for(i=0;i<10;i++)
+    for(j=0;j<10;j++)
+      scanf("%d", &g[i][j]);
+  bfs(g, v, src);
+  printf("Path from Source:%d to all other nodesn\n", src);
+  for(i=0;i<10;i++)
+  {
+    PrintPath(g,v,src,i);
+    printf("\n");
+  }
+  return 0;
 }
 ```
 =================================//0-1Knapsack//==========================================
