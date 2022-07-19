@@ -1,120 +1,60 @@
-#include <stdio.h> 
-int c= 0; 
-void swap(int *a,int *b ) 
-{ 
-    int temp =*a; 
-    *a= *b; 
-    *b = temp; 
-} 
-int partition(int a[],int start,int end) 
-{ 
-    int j ; 
-    int pivot = a[end]; 
-    int i =(start-1); 
-    for(j=start ; j<end ; j++) 
-    { 
-        if(a[j]<= pivot) 
-        { 
-            i++; 
-            swap(&a[i],&a[j]); 
-            c++; 
-        } 
-    } 
-    swap(&a[i+1],&a[end]); 
-    c++; 
-    return i + 1;  
+#include <stdio.h>
+int count=0;
+int partition(int a[],int p,int r)
+{
   
-} 
-void quicksort(int a[],int start, int end) 
-{ 
-    if(start < end) 
-    { 
-        int pi = partition(a,start,end); 
-        quicksort(a,start,pi-1); 
-        quicksort(a,pi+1,end); 
-    } 
-} 
-void printarray(int a[],int n) 
-{ 
-    for(int i = 0 ; i< n ; i++) 
-    { 
-        printf("%d ",a[i]); 
-    } 
-} 
-int main() 
-{ 
-    int size , arr[100]; 
-    printf("enetr the size of an aray \n"); 
-    scanf("%d",&size); 
-    printf("enetr the elements of the array\n"); 
-    for(int  i = 0 ; i<size ;i++) 
-    { 
-        scanf("%d",&arr[i]); 
-    } 
-    printf("sorted array is: "); 
-    quicksort(arr,0,size-1); 
-    printarray(arr,size); 
-    printf("\nThe no. of iterations are : %d \n",c); 
-} 
- 
-//(exp-4b-quicksort pivot start) 
- 
-#include <stdio.h> 
-int c= 0; 
-void swap(int *a,int *b ) 
-{ 
-    int temp =*a; 
-    *a= *b; 
-    *b = temp; 
-} 
-int partition(int a[],int start,int end) 
-{ 
-    int j ; 
-    int pivot = a[start]; 
-    int i =(end+1); 
-    for(j=end ; j>start ; j--) 
-    { 
-        if(a[j]>= pivot) 
-        { 
-            i--; 
-            swap(&a[i],&a[j]); 
-            c++; 
-        } 
-    } 
-    swap(&a[i-1],&a[start]); 
-    c++; 
-    return i - 1;  
+  int temp;
+  int x=a[p];
+  int i=r+1;
+  for(int j=r;j>=p+1;j--)
+    {
+       count++;
+      if(a[j]>=x)
+      {
+        count++; 
+        i=i-1;
+        temp=a[i];
+        a[i]=a[j];
+        a[j]=temp;
+        
+      }
+      
+    }
+  temp=a[i-1];
+  a[i-1]=a[p];
+  a[p]=temp;
+return (i-1);
+}
+void quicksort(int a[],int p,int r)
+{
+  int pivot=p;
+  int high=r;
+  if(p<r)
+  {
+     
+    int q=partition(a,p,r);
+    quicksort(a,p,q-1);
+    quicksort(a,q+1,r);
+    count++;
+  }
+}
+int main()
+{
+  int a[30],k,n;
+  printf("enter the no. of elements:");
+  scanf("%d",&n);
+  printf("enter the elements:\n");
+  for(k=0;k<n;k++)
+    {
+      scanf("%d",&a[k]);
+    }
+  quicksort(a,0,n-1);
+  printf("sorted array is:");
+  for(k=0;k<n;k++)
+    {
+      printf("%d ",a[k]);
+    }
+  printf("\n number of comparisons:%d",count);
   
-} 
-void quicksort(int a[],int start, int end) 
-{ 
-    if(start < end) 
-    { 
-        int pi = partition(a,start,end); 
-        quicksort(a,start,pi-1); 
-        quicksort(a,pi+1,end); 
-    } 
-} 
-void printarray(int a[],int n) 
-{ 
-    for(int i = 0 ; i< n ; i++) 
-    { 
-        printf("%d ",a[i]); 
-    } 
-} 
-int main() 
-{ 
-    int size , arr[100]; 
-    printf("enetr the size of an aray \n"); 
-    scanf("%d",&size); 
-    printf("enetr the elements of the array\n"); 
-    for(int  i = 0 ; i<size ;i++) 
-    { 
-        scanf("%d",&arr[i]); 
-         
-    } 
-    printf("sorted array is: "); 
-    quicksort(arr,0,size-1); 
-    printarray(arr,size); 
-    printf("\nThe no. of iterations arr : %d \n",c); 
+  return 0;
 }
